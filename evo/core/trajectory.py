@@ -371,7 +371,7 @@ def se3_poses_to_xyz_quat_wxyz(poses):
 
 
 def align_trajectory(traj, traj_ref, correct_scale=False,
-                     correct_only_scale=False, n=-1, return_parameters=False):
+                     correct_only_scale=False, n=-1, return_parameters=False, correct_origin=False):
     """
     align a trajectory to a reference using Umeyama alignment
     :param traj: the trajectory to align
@@ -386,6 +386,13 @@ def align_trajectory(traj, traj_ref, correct_scale=False,
     """
     # otherwise np arrays will be references and mess up stuff
     traj_aligned = copy.deepcopy(traj)
+#     quat = traj_ref.orientations_quat_wxyz[0,:]
+#     r_ref = tr.quaternion_matrix(quat)[:3,:3]
+#     t_ref = traj_ref.positions_xyz[0,:]
+#     traj_aligned.transform(lie.se3(r_ref, t_ref),propagate=True)
+    
+    
+    
     with_scale = correct_scale or correct_only_scale
     if correct_only_scale:
         logger.debug("Correcting scale...")
@@ -411,6 +418,7 @@ def align_trajectory(traj, traj_ref, correct_scale=False,
         traj_aligned.transform(lie.se3(r_a, t_a))
     else:
         traj_aligned.transform(lie.se3(r_a, t_a))
+        
 
     if return_parameters:
         return traj_aligned, r_a, t_a, s
